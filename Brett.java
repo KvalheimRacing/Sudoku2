@@ -10,7 +10,7 @@ private int antallRader;         // I en boks
 private int antallKolonner;      // I en boks
 private int antallBokser;        // Dette er også det samme som lengden vertikalt og horisontalt mtp antall ruter.
 private int antallRuter;         // Totalt paa brettet
-//private boolean verdien0ErSatt;
+private boolean etTallBleUtfyldt; //verdien0ErSatt;
 
 
 
@@ -148,15 +148,17 @@ private int antallRuter;         // Totalt paa brettet
     return brettetsRuter;
   }
 
-  // Fyller inn ruter som har obious losning
+  // Fyller inn ruter som har obious losning forst. Dette er slik man loser det for haand, og det vil kunne fore til flere losninger med et svar
   public void fyllInnRuterMedBareEttMuligTall() {
 
+      etTallBleUtfyldt = false;
       for (int y = 0; y < antallBokser; y++) {
           for (int x = 0; x < antallBokser; x++) {
               if (brettetsRuter[y][x].getVerdi()==0) {
                 if (brettetsRuter[y][x].finnAlleMuligeTall().length == 1) {
                     brettetsRuterUferdig[y][x].setVerdi(brettetsRuter[y][x].finnAlleMuligeTall()[0]);
                     System.out.println("Satt inn verdien " + brettetsRuter[y][x].finnAlleMuligeTall()[0] + " paa plass x:" + brettetsRuter[y][x].getxKoordinat() + "  y:" + brettetsRuter[y][x].getyKoordinat());
+                    etTallBleUtfyldt = true;
                 }
               }
           }
@@ -207,7 +209,12 @@ private int antallRuter;         // Totalt paa brettet
   public void losBrett() {
     double tidStart = System.currentTimeMillis();
     // fyller ut rutene
+
     fyllInnRuterMedBareEttMuligTall();
+    // Kjorer dette for det kan fore til nye losninger
+    while (etTallBleUtfyldt) {
+      fyllInnRuterMedBareEttMuligTall();
+    }
     fyllUtDenneRuteOgResten( 0, 0, brettetsRuter);
     double tidSlutt = System.currentTimeMillis();
     System.out.println("\nDet tok " + (tidSlutt-tidStart) + " millisek aa gjennomfore");
