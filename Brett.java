@@ -52,6 +52,7 @@ private int antallRuter;         // Totalt paa brettet
           brettetsBokser[finnBoksIndeksUtIfraKoordinater(j,k)].settInn(brettetsRuter[j][k]);
           brettetsRuter[j][k].leggTilData(brettetsRader[j],brettetsKolonner[k],brettetsBokser[finnBoksIndeksUtIfraKoordinater(j,k)]);
           brettetsRuterOrginal[j][k].leggTilData(brettetsRader[j],brettetsKolonner[k],brettetsBokser[finnBoksIndeksUtIfraKoordinater(j,k)]);
+          brettetsRuterUferdig[j][k].leggTilData(brettetsRader[j],brettetsKolonner[k],brettetsBokser[finnBoksIndeksUtIfraKoordinater(j,k)]);
 
         }
     }
@@ -86,8 +87,8 @@ private int antallRuter;         // Totalt paa brettet
       while(finnTomRute()) {
 
         // Hvis det er et allerde bestemt et tall der, gaa til neste nummer
-        if (brettetsRuterOrginal[i][j].getVerdi() != 0 && !verdien0ErSatt) {
-                System.out.println("Brettet har en allerede bestemt verdi: " + brettetsRuterOrginal[i][j].getVerdi() + "  i rute  x:" + brettetsRuterOrginal[i][j].getxKoordinat() + "  y:" + brettetsRuterOrginal[i][j].getyKoordinat());
+        if (brettetsRuterUferdig[i][j].getVerdi() != 0) { //  && !verdien0ErSatt
+                System.out.println("Brettet har en allerede bestemt verdi: " + brettetsRuterUferdig[i][j].getVerdi() + "  i rute  x:" + brettetsRuterUferdig[i][j].getxKoordinat() + "  y:" + brettetsRuterOrginal[i][j].getyKoordinat());
                 int ii,jj;
                 //  Hvis ruten er i enden, gaa ned og start paa x=0
                 if (j==(antallBokser-1)) { ii = i+1; jj = 0; }
@@ -147,16 +148,17 @@ private int antallRuter;         // Totalt paa brettet
     return brettetsRuter;
   }
 
-  //
+  // Fyller inn ruter som har obious losning
   public void fyllInnRuterMedBareEttMuligTall() {
 
-      for (int x = 0; x < antallBokser; x++) {
-          for (int y = 0; y < antallBokser; y++) {
-              int[] muligeTall = finnAlleMuligeTall(x, y);
-              if (muligeTall.length() == 1)
-                  {
-                    //Riktig tall for denne cellen funnet
-                  }
+      for (int y = 0; y < antallBokser; y++) {
+          for (int x = 0; x < antallBokser; x++) {
+              if (brettetsRuter[y][x].getVerdi()==0) {
+                if (brettetsRuter[y][x].finnAlleMuligeTall().length == 1) {
+                    brettetsRuterUferdig[y][x].setVerdi(brettetsRuter[y][x].finnAlleMuligeTall()[0]);
+                    System.out.println("Satt inn verdien " + brettetsRuter[y][x].finnAlleMuligeTall()[0] + " paa plass x:" + brettetsRuter[y][x].getxKoordinat() + "  y:" + brettetsRuter[y][x].getyKoordinat());
+                }
+              }
           }
       }
   }
@@ -205,6 +207,7 @@ private int antallRuter;         // Totalt paa brettet
   public void losBrett() {
     double tidStart = System.currentTimeMillis();
     // fyller ut rutene
+    fyllInnRuterMedBareEttMuligTall();
     fyllUtDenneRuteOgResten( 0, 0, brettetsRuter);
     double tidSlutt = System.currentTimeMillis();
     System.out.println("\nDet tok " + (tidSlutt-tidStart) + " millisek aa gjennomfore");
